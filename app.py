@@ -2486,7 +2486,7 @@ def main() -> None:
     init_state()
     inject_css()
 
-    logo_path = Path(__file__).parent / "assets" / "logo.svg"
+    logo_path = Path(__file__).parent / "logo.svg"
     if logo_path.exists():
         st.logo(str(logo_path), size="large")
 
