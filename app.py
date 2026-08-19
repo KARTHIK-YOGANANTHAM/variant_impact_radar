@@ -66,10 +66,10 @@ EXAMPLE_VARIANTS = [
 # ---------------------------------------------------------------------------
 
 DEV_PHOTO_CANDIDATES = (
-    "assets/developer.png",
-    "assets/developer.jpg",
-    "assets/developer.jpeg",
-    "assets/developer.webp",
+    "developer.png",
+    "developer.jpg",
+    "developer.jpeg",
+    "developer.webp",
 )
 
 DEVELOPER_PROFILE = {
@@ -2828,7 +2828,7 @@ def main() -> None:
     init_state()
     inject_css()
 
-    logo_path = Path(__file__).parent / "assets" / "logo.svg"
+    logo_path = Path(__file__).parent / "logo.svg"
     if logo_path.exists():
         st.logo(str(logo_path), size="large")
 
