@@ -20,6 +20,7 @@ Important:
 
 from __future__ import annotations
 
+import base64
 import html
 import json
 import re
@@ -53,6 +54,83 @@ EXAMPLE_VARIANTS = [
     "rs1801131",
     "rs1800795",
 ]
+
+# ---------------------------------------------------------------------------
+# Developer profile — rendered on the "About the developer" page.
+#
+# EDIT ME: every value below is a placeholder. Swap in your real name, bio,
+# links, stats, and timeline. The portrait is loaded from the first existing
+# file in DEV_PHOTO_CANDIDATES — drop your photo at assets/developer.png
+# (next to assets/logo.svg) and it appears automatically; until then a
+# neutral "blank profile" silhouette is rendered inline.
+# ---------------------------------------------------------------------------
+
+DEV_PHOTO_CANDIDATES = (
+    "assets/developer.png",
+    "assets/developer.jpg",
+    "assets/developer.jpeg",
+    "assets/developer.webp",
+)
+
+DEVELOPER_PROFILE = {
+    "name": "Karthik Yoganantham",
+    "role": "Bioinformatics Analyst · Computational Biologist",
+    "location": "Kanchipuram, India",
+    "availability": "Open to collaborations",
+    "tagline": (
+        "Turning dense genomic annotation into interfaces people actually "
+        "want to read."
+    ),
+    "bio": (
+        "I am a bioinformatics engineer and data analyst working at "
+        "the intersection of genomics and software: REST-API-driven analysis "
+        "tools, reproducible pipelines, and dashboards that keep every number "
+        "traceable back to its source. Variant Impact Radar grew out of that "
+        "habit — a small, transparent workbench that shows exactly how a raw "
+        "Ensembl VEP response becomes an evidence summary. Away from the "
+        "keyboard I am usually reading population-genetics papers, sketching "
+        "interface ideas, or fine-tuning espresso ratios."
+    ),
+    "email": "karthikyoganantham@gmail.com",
+    "linkedin": "www.linkedin.com/in/karthik-yoganantham",
+    "github": "https://github.com/KARTHIK-YOGANANTHAM",
+    "portfolio": "https://karthikyoganantham.framer.website/",
+    "skills": [
+        "Python", "Streamlit", "Plotly", "pandas", "REST APIs",
+        "Ensembl VEP", "R / Bioconductor", "SQL", "Docker", "Git & CI",
+        "Linux", "NGS pipelines", "Data visualization", "HTML / CSS", "ML", "Scikit-Learn", "RNN"
+    ],
+    # (label, value, sub-caption) — rendered as metric cards.
+    "stats": [
+        ("Experience", "1+ years", "Bioinformatics & ML Analyst"),
+        ("Projects shipped", "12", "Tools, pipelines & dashboards"),
+        ("Open-source repos", "8", "Python · R · JavaScript"),
+        ("Publications", "1", "Co-authored, peer-reviewed"),
+    ],
+    # (year, title, description) — rendered as a vertical timeline.
+    "timeline": [
+        (
+            "2026", "Variant Impact Radar v2",
+            "Rebuilt the workbench as a multi-page Streamlit application "
+            "with a transparent scoring heuristic and shareable reports.",
+        ),
+        (
+            "2025", "Gene Express analysis of Diabetic Complications",
+            "Gene Express analysis and visualization of Diabetic Retinopathy and its related complications using R, "
+            "A comprehensive Study",
+        ),
+        (
+            "2025", "MSc Bioinformatics",
+            "Thesis on regulatory-variant prioritization using public "
+            "annotation resources.",
+        ),
+        (
+            "2024", "Multiple Disease Prediction Project",
+            "Machine Learning based Project on Multiple Disease Prediction "
+            "using Patient MetaData",
+        ),
+    ],
+}
 
 # Transparent heuristic weights.
 CONSEQUENCE_WEIGHTS = {
@@ -454,6 +532,104 @@ div[data-testid="stExpander"] details {
     font-size: .72rem;
     letter-spacing: .05em;
     color: var(--muted);
+}
+
+/* ------------- About-the-developer page ------------- */
+
+.vr-dev-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.7rem;
+    background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.8rem 1.9rem 2.2rem;
+    overflow: hidden;
+}
+.vr-dev-hero::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 14px;
+    background:
+        repeating-linear-gradient(90deg,
+            rgba(232,163,61,.55) 0 1px, transparent 1px 12px),
+        repeating-linear-gradient(90deg,
+            rgba(232,163,61,.28) 0 1px, transparent 1px 60px);
+    background-size: auto 7px, auto 14px;
+    background-repeat: repeat-x;
+    background-position: bottom left;
+    opacity: .8;
+}
+.vr-dev-photo {
+    width: 152px;
+    height: 152px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--amber);
+    box-shadow: 0 0 0 6px var(--amber-dim), 0 0 26px rgba(232,163,61,.22);
+    background: var(--surface-2);
+    flex: 0 0 auto;
+}
+.vr-dev-hero-body { flex: 1 1 320px; min-width: 260px; }
+.vr-dev-name {
+    font-family: var(--serif);
+    font-size: clamp(1.9rem, 3.6vw, 2.7rem);
+    font-weight: 500;
+    color: var(--porcelain);
+    line-height: 1.12;
+    margin: .25rem 0 .35rem;
+}
+.vr-dev-loc {
+    font-family: var(--mono);
+    font-size: .78rem;
+    letter-spacing: .06em;
+    color: var(--muted);
+    margin-bottom: .7rem;
+}
+.vr-dev-tagline {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.04rem;
+    color: var(--porcelain);
+    opacity: .92;
+    max-width: 560px;
+    line-height: 1.55;
+}
+.vr-dev-timeline {
+    border-left: 1px solid var(--line);
+    margin: .5rem 0 .2rem .4rem;
+    padding-left: 1.25rem;
+}
+.vr-dev-tl-item { position: relative; padding-bottom: 1.2rem; }
+.vr-dev-tl-item:last-child { padding-bottom: .2rem; }
+.vr-dev-tl-item::before {
+    content: "";
+    position: absolute;
+    left: calc(-1.25rem - 4.5px);
+    top: .32rem;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 8px 1px rgba(232,163,61,.55);
+}
+.vr-dev-tl-year {
+    font-family: var(--mono);
+    font-size: .70rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: .15rem;
+}
+.vr-dev-tl-title { font-weight: 600; color: var(--porcelain); font-size: .95rem; }
+.vr-dev-tl-desc {
+    color: var(--muted);
+    font-size: .84rem;
+    margin-top: .18rem;
+    line-height: 1.55;
+    max-width: 640px;
 }
 </style>
         """,
@@ -2399,6 +2575,172 @@ def methodology_page() -> None:
 
 
 # ---------------------------------------------------------------------------
+# About-the-developer page
+# ---------------------------------------------------------------------------
+
+def _developer_photo_src() -> str:
+    """
+    Return a data-URI for the developer portrait.
+
+    The first existing file in DEV_PHOTO_CANDIDATES is embedded, so adding a
+    real photo is a pure asset drop (e.g. assets/developer.png) with no code
+    change. Until then a neutral "blank profile" silhouette — matching the
+    classic placeholder avatar — is rendered inline so the page never shows
+    a broken image.
+    """
+    base = Path(__file__).parent
+    for rel in DEV_PHOTO_CANDIDATES:
+        photo = base / rel
+        if photo.exists():
+            mime = {
+                ".png": "image/png",
+                ".jpg": "image/jpeg",
+                ".jpeg": "image/jpeg",
+                ".webp": "image/webp",
+            }.get(photo.suffix.lower(), "image/png")
+            encoded = base64.b64encode(photo.read_bytes()).decode("ascii")
+            return f"data:{mime};base64,{encoded}"
+
+    # Placeholder silhouette (grey bust), tuned to the dark theme.
+    placeholder_svg = (
+        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'>"
+        "<rect width='200' height='200' fill='#211C15'/>"
+        "<circle cx='100' cy='76' r='36' fill='#8B8577'/>"
+        "<path d='M100 120 c-43 0 -63 27 -67 56 a100 100 0 0 0 134 0 "
+        "c-4 -29 -24 -56 -67 -56 z' fill='#8B8577'/>"
+        "</svg>"
+    )
+    encoded = base64.b64encode(placeholder_svg.encode("utf-8")).decode("ascii")
+    return f"data:image/svg+xml;base64,{encoded}"
+
+
+def about_developer_page() -> None:
+    dev = DEVELOPER_PROFILE
+
+    # Hero — portrait, name, role, and tagline in the locus-strip style.
+    st.markdown(
+        html_block(f"""
+        <div class="vr-dev-hero">
+            <img class="vr-dev-photo" src="{_developer_photo_src()}"
+                 alt="Portrait of {esc(dev['name'])}">
+            <div class="vr-dev-hero-body">
+                <div class="vr-eyebrow">{esc(dev['role'])}</div>
+                <div class="vr-dev-name">{esc(dev['name'])}</div>
+                <div class="vr-dev-loc">
+                    {esc(dev['location'])} · {esc(dev['availability'])}
+                </div>
+                <div class="vr-dev-tagline">“{esc(dev['tagline'])}”</div>
+            </div>
+        </div>
+        """),
+        unsafe_allow_html=True,
+    )
+
+    st.markdown('<div style="height:.9rem"></div>', unsafe_allow_html=True)
+    l1, l2, l3, l4 = st.columns(4)
+    with l1:
+        st.link_button(
+            "LinkedIn", dev["linkedin"],
+            width="stretch", icon=":material/open_in_new:",
+        )
+    with l2:
+        st.link_button(
+            "GitHub", dev["github"],
+            width="stretch", icon=":material/code:",
+        )
+    with l3:
+        st.link_button(
+            "Portfolio", dev["portfolio"],
+            width="stretch", icon=":material/language:",
+        )
+    with l4:
+        st.link_button(
+            "Email", f"mailto:{dev['email']}",
+            width="stretch", icon=":material/mail:",
+        )
+
+    section_header(
+        "Profile", "Biography",
+        "Who built Variant Impact Radar, and why.",
+    )
+    st.markdown(
+        f'<div class="vr-story">{esc(dev["bio"])}</div>',
+        unsafe_allow_html=True,
+    )
+
+    section_header(
+        "Snapshot", "At a glance",
+        "A quick read of experience and output.",
+    )
+    metric_row(
+        [metric_card(label, value, sub=sub) for label, value, sub in dev["stats"]]
+    )
+
+    section_header(
+        "Toolbox", "Skills & technologies",
+        "The day-to-day stack behind projects like this one.",
+    )
+    skill_chips = "".join(
+        f'<span class="vr-chip">{esc(skill)}</span>' for skill in dev["skills"]
+    )
+    st.markdown(skill_chips, unsafe_allow_html=True)
+
+    section_header(
+        "Journey", "Experience highlights",
+        "Selected milestones — newest first.",
+    )
+    timeline_items = "".join(
+        f'<div class="vr-dev-tl-item">'
+        f'<div class="vr-dev-tl-year">{esc(year)}</div>'
+        f'<div class="vr-dev-tl-title">{esc(title)}</div>'
+        f'<div class="vr-dev-tl-desc">{esc(desc)}</div>'
+        f"</div>"
+        for year, title, desc in dev["timeline"]
+    )
+    st.markdown(
+        f'<div class="vr-dev-timeline">{timeline_items}</div>',
+        unsafe_allow_html=True,
+    )
+
+    section_header(
+        "Build notes", "Behind this project",
+        "How this workbench came together.",
+    )
+    st.markdown(
+        "Variant Impact Radar doubles as a portfolio piece: a worked example "
+        "of a clean, API-driven analytical application — input validation, "
+        "cached HTTP calls, defensive parsing of a deeply nested VEP "
+        "response, and a fixed, fully visible scoring scheme. Everything on "
+        "screen can be audited against the raw Ensembl payload on the "
+        "*Reports & export* page."
+    )
+    st.page_link(
+        PAGES["methodology"],
+        label="Read the full scoring methodology",
+        icon=":material/menu_book:",
+    )
+
+    section_header(
+        "Connect", "Find me online",
+        "Collaborations, feedback, or a friendly hello.",
+    )
+    contact_links = [
+        ("LinkedIn", dev["linkedin"]),
+        ("GitHub", dev["github"]),
+        ("Portfolio", dev["portfolio"]),
+        (dev["email"], f"mailto:{dev['email']}"),
+    ]
+    contact_chips = "".join(
+        f'<span class="vr-chip"><a href="{esc(url)}" target="_blank" '
+        f'rel="noopener">{esc(label)}</a></span>'
+        for label, url in contact_links
+    )
+    st.markdown(contact_chips, unsafe_allow_html=True)
+
+    page_footer()
+
+
+# ---------------------------------------------------------------------------
 # Sidebar console
 # ---------------------------------------------------------------------------
 
@@ -2486,7 +2828,7 @@ def main() -> None:
     init_state()
     inject_css()
 
-    logo_path = Path(__file__).parent / "logo.svg"
+    logo_path = Path(__file__).parent / "assets" / "logo.svg"
     if logo_path.exists():
         st.logo(str(logo_path), size="large")
 
@@ -2514,6 +2856,10 @@ def main() -> None:
         methodology_page, title="Methodology", url_path="methodology",
         icon=":material/menu_book:",
     )
+    PAGES["about"] = st.Page(
+        about_developer_page, title="About the developer", url_path="about",
+        icon=":material/person:",
+    )
 
     pg = st.navigation(
         {
@@ -2521,7 +2867,7 @@ def main() -> None:
                 PAGES["overview"], PAGES["evidence"], PAGES["transcripts"],
             ],
             "Tools": [PAGES["compare"], PAGES["reports"]],
-            "Reference": [PAGES["methodology"]],
+            "Reference": [PAGES["methodology"], PAGES["about"]],
         }
     )
 
